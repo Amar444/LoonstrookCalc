@@ -10,4 +10,5 @@ package loonstrookcalc;
  */
 public class WorkHours {
     //NU IS DE KLASSE NIET MEER LEEG!
+    //blabla
 }
