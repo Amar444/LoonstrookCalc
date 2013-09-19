@@ -4,6 +4,7 @@
  */
 package loonstrookcalc;
 
+import java.awt.Graphics;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
@@ -15,26 +16,23 @@ import javax.swing.table.DefaultTableModel;
  * @author Amar Tursic
  */
 public class MainFrame extends javax.swing.JFrame {
-    
+
     private DefaultTableModel myModel;
 
     public MainFrame() {
         initComponents(); //Altijd als eerste laten
         myModel = (DefaultTableModel) workTimeTable.getModel();
+        //nameField.setText("Amar");
         getDate();
-        //firstTimeMessage();
-        
+        checkIfNewUser();
+
     }
 
-   
     @SuppressWarnings("unchecked")
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
 
         jTabbedPane1 = new javax.swing.JTabbedPane();
-        jPanel2 = new javax.swing.JPanel();
-        jLabel2 = new javax.swing.JLabel();
-        nameField = new javax.swing.JTextField();
         jPanel1 = new javax.swing.JPanel();
         jScrollPane1 = new javax.swing.JScrollPane();
         workTimeTable = new javax.swing.JTable();
@@ -45,33 +43,11 @@ public class MainFrame extends javax.swing.JFrame {
         jLabel3 = new javax.swing.JLabel();
         jComboBox1 = new javax.swing.JComboBox();
         jButton1 = new javax.swing.JButton();
+        jPanel2 = new javax.swing.JPanel();
+        jLabel2 = new javax.swing.JLabel();
+        nameField = new javax.swing.JTextField();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
-
-        jLabel2.setText("Name:");
-
-        javax.swing.GroupLayout jPanel2Layout = new javax.swing.GroupLayout(jPanel2);
-        jPanel2.setLayout(jPanel2Layout);
-        jPanel2Layout.setHorizontalGroup(
-            jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(jPanel2Layout.createSequentialGroup()
-                .addGap(35, 35, 35)
-                .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(jLabel2)
-                    .addComponent(nameField, javax.swing.GroupLayout.PREFERRED_SIZE, 68, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addContainerGap(771, Short.MAX_VALUE))
-        );
-        jPanel2Layout.setVerticalGroup(
-            jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(jPanel2Layout.createSequentialGroup()
-                .addGap(47, 47, 47)
-                .addComponent(jLabel2)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(nameField, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap(289, Short.MAX_VALUE))
-        );
-
-        jTabbedPane1.addTab("Gebruikers Info", jPanel2);
 
         workTimeTable.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
@@ -140,21 +116,47 @@ public class MainFrame extends javax.swing.JFrame {
 
         jTabbedPane1.addTab("Registratie", jPanel1);
 
+        jLabel2.setText("Name:");
+
+        javax.swing.GroupLayout jPanel2Layout = new javax.swing.GroupLayout(jPanel2);
+        jPanel2.setLayout(jPanel2Layout);
+        jPanel2Layout.setHorizontalGroup(
+            jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(jPanel2Layout.createSequentialGroup()
+                .addGap(35, 35, 35)
+                .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(jLabel2)
+                    .addComponent(nameField, javax.swing.GroupLayout.PREFERRED_SIZE, 68, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addContainerGap(771, Short.MAX_VALUE))
+        );
+        jPanel2Layout.setVerticalGroup(
+            jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(jPanel2Layout.createSequentialGroup()
+                .addGap(47, 47, 47)
+                .addComponent(jLabel2)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(nameField, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addContainerGap(289, Short.MAX_VALUE))
+        );
+
+        jTabbedPane1.addTab("Gebruikers Info", jPanel2);
+
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(jTabbedPane1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+            .addGroup(layout.createSequentialGroup()
+                .addComponent(jTabbedPane1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(0, 20, Short.MAX_VALUE))
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(jTabbedPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 404, javax.swing.GroupLayout.PREFERRED_SIZE)
+            .addComponent(jTabbedPane1, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.PREFERRED_SIZE, 404, javax.swing.GroupLayout.PREFERRED_SIZE)
         );
 
         pack();
     }// </editor-fold>//GEN-END:initComponents
 
-    
     public static void main(String args[]) {
         //<editor-fold defaultstate="collapsed" desc=" Look and feel setting code (optional) ">
         /* If Nimbus (introduced in Java SE 6) is not available, stay with the default look and feel.
@@ -188,7 +190,7 @@ public class MainFrame extends javax.swing.JFrame {
             }
         });
     }
-    
+
     private void getDate() {
         Calendar cal = Calendar.getInstance();  // Create new calendar instance      
         DateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy"); //Create format for day : Day
@@ -202,15 +204,29 @@ public class MainFrame extends javax.swing.JFrame {
         maandField.setText(maand);
         jaarField.setText(jaar);
     }
-    
-    private void firstTimeMessage() {
-        if ( nameField.getText().equals("") ) {
-            JOptionPane.showMessageDialog(null, "Welkom! Vul A.U.B. uw informatie in bij de 'gebruikers info' tab.");
-        }
-    
+
+    private void checkIfNewUser() {
+        new Thread(getTimer()).start();
     }
-    
-    
+
+    private Runnable getTimer() {
+        return new Runnable() {
+            @Override
+            public void run() {
+                if (newUser()) {
+                    firstTimeMessage();
+                }
+            }
+        };
+    }
+
+    private boolean newUser() {
+        return (nameField.getText().equals(""));
+    }
+
+    private void firstTimeMessage() {
+        JOptionPane.showMessageDialog(null, "Welkom! Vul A.U.B. uw informatie in bij de 'gebruikers info' tab.");
+    }
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JTextField dagField;
     private javax.swing.JButton jButton1;
