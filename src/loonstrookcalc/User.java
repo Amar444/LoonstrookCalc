@@ -12,12 +12,19 @@ import java.util.List;
  * @author Amar Tursic
  */
 public class User {
-
+    
     private List<WorkHours> workHours;
     private int id;
     private String name;    
     private Double brutoUurloon;
     private Double nettoUurloon;
+    
+    public User(String name, double brutoUurloon, double nettoUurloon) {
+        workHours = new ArrayList<WorkHours>();
+        this.name = name;
+        this.brutoUurloon = brutoUurloon;
+        this.nettoUurloon = nettoUurloon;
+    }
 
     public List<WorkHours> getWorkHours() {
         return workHours;
@@ -60,11 +67,6 @@ public class User {
     }
     
     
-    public User(String name, double brutoUurloon, double nettoUurloon) {
-        workHours = new ArrayList<WorkHours>();
-        this.name = name;
-        this.brutoUurloon = brutoUurloon;
-        this.nettoUurloon = nettoUurloon;
-    }
+    
     
 }

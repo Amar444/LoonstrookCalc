@@ -17,6 +17,15 @@ public class WorkHours {
     private double hours;
     private double euro;
     private int factor;
+    
+    public WorkHours(int day, int month, int year, double hours, double euro, int factor) {
+        this.day = day;
+        this.month = month;
+        this.year = year;
+        this.hours = hours;
+        this.euro = euro;
+        this.factor = factor;
+    }
 
     public int getId() {
         return id;
@@ -75,13 +84,6 @@ public class WorkHours {
     }
     
     
-    public WorkHours(int day, int month, int year, double hours, double euro, int factor) {
-        this.day = day;
-        this.month = month;
-        this.year = year;
-        this.hours = hours;
-        this.euro = euro;
-        this.factor = factor;
-    }
+    
     
 }
