@@ -4,6 +4,8 @@
  */
 package loonstrookcalc;
 
+import java.sql.Connection;
+import java.sql.DriverManager;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
@@ -17,7 +19,8 @@ import javax.swing.table.DefaultTableModel;
 public class MainFrame extends javax.swing.JFrame {
 
     private DefaultTableModel myModel;
-
+   
+    
     public MainFrame() {
         initComponents(); //Altijd als eerste laten
         initializeFrame();
@@ -408,6 +411,7 @@ public class MainFrame extends javax.swing.JFrame {
         /* Create and display the form */
         java.awt.EventQueue.invokeLater(new Runnable() {
             public void run() {
+                SQLiteJDBC.OpenConnection();
                 MainFrame mf = new MainFrame();
                 mf.setVisible(true);
                 mf.setResizable(false);

@@ -12,8 +12,8 @@ import java.sql.*;
 
 public class SQLiteJDBC
 {
-  public static void main( String args[] )
-  {
+ public static void OpenConnection(){
+    {
     Connection c = null;
     try {
       Class.forName("org.sqlite.JDBC");
@@ -24,4 +24,6 @@ public class SQLiteJDBC
     }
     System.out.println("Opened database successfully");
   }
+    }
 }
+  
