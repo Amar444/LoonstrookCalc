@@ -4,8 +4,6 @@
  */
 package loonstrookcalc;
 
-import java.sql.Connection;
-import java.sql.DriverManager;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
