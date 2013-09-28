@@ -408,7 +408,7 @@ public class MainFrame extends javax.swing.JFrame {
         /* Create and display the form */
         java.awt.EventQueue.invokeLater(new Runnable() {
             public void run() {
-                SQLiteJDBC.OpenConnection();
+                DatabaseConnection.OpenConnection();
                 MainFrame mf = new MainFrame();
                 mf.setVisible(true);
                 mf.setResizable(false);
