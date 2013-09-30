@@ -17,8 +17,7 @@ import javax.swing.table.DefaultTableModel;
 public class MainFrame extends javax.swing.JFrame {
 
     private DefaultTableModel myModel;
-   
-    
+
     public MainFrame() {
         initComponents(); //Altijd als eerste laten
         initializeFrame();
@@ -26,6 +25,7 @@ public class MainFrame extends javax.swing.JFrame {
         //nameField.setText("Amar");
         getDate();
         checkIfNewUser();
+
     }
 
     private void initializeFrame() {
@@ -37,14 +37,13 @@ public class MainFrame extends javax.swing.JFrame {
             filterJaarCombo.addItem(i);
         }
         for (int i = 1; i <= 12; i++) {
-            String month = null;
+            String month = Integer.toString(i);
             if (i < 10) {
                 month = "0" + i;
-            } else {
-                month = Integer.toString(i);
             }
             filterMaandCombo.addItem(month);
         }
+        nettoLoonField.setText("0");
     }
 
     @SuppressWarnings("unchecked")
@@ -79,15 +78,16 @@ public class MainFrame extends javax.swing.JFrame {
         jLabel2 = new javax.swing.JLabel();
         nameField = new javax.swing.JTextField();
         jLabel9 = new javax.swing.JLabel();
-        jTextField3 = new javax.swing.JTextField();
+        brutoLoonField = new javax.swing.JTextField();
         jLabel10 = new javax.swing.JLabel();
-        jTextField4 = new javax.swing.JTextField();
-        jButton4 = new javax.swing.JButton();
+        nettoLoonField = new javax.swing.JTextField();
+        opslaanButton = new javax.swing.JButton();
         jLabel7 = new javax.swing.JLabel();
         jComboBox1 = new javax.swing.JComboBox();
         jLabel11 = new javax.swing.JLabel();
         jLabel12 = new javax.swing.JLabel();
         jLabel15 = new javax.swing.JLabel();
+        jLabel13 = new javax.swing.JLabel();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
 
@@ -278,7 +278,7 @@ public class MainFrame extends javax.swing.JFrame {
                                 .addGap(20, 20, 20)
                                 .addComponent(jPanel5, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))))
                     .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 292, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 20, Short.MAX_VALUE)
                 .addComponent(jPanel4, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGap(13, 13, 13))
         );
@@ -291,9 +291,14 @@ public class MainFrame extends javax.swing.JFrame {
 
         jLabel10.setText("Netto uurloon:");
 
-        jButton4.setText("Gegevens opslaan");
+        opslaanButton.setText("Gegevens opslaan");
+        opslaanButton.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                opslaanButtonActionPerformed(evt);
+            }
+        });
 
-        jLabel7.setText("Word er vakantiegeld elke maand bij uw salaris opgerekend?");
+        jLabel7.setText("Wordt er vakantiegeld elke maand bij uw salaris opgerekend?");
 
         jComboBox1.setModel(new javax.swing.DefaultComboBoxModel(new String[] { "Nee", "Ja" }));
 
@@ -303,6 +308,8 @@ public class MainFrame extends javax.swing.JFrame {
 
         jLabel15.setFont(new java.awt.Font("Tahoma", 0, 10)); // NOI18N
         jLabel15.setText("*Let erop dat alle bedragen die in het programma worden berekend indicaties zijn, en niet altijd zullen kloppen!");
+
+        jLabel13.setText("*Optioneel, laat 0 staan als u het bedrag niet weet!");
 
         javax.swing.GroupLayout jPanel2Layout = new javax.swing.GroupLayout(jPanel2);
         jPanel2.setLayout(jPanel2Layout);
@@ -327,14 +334,17 @@ public class MainFrame extends javax.swing.JFrame {
                                 .addComponent(jLabel2)
                                 .addComponent(jLabel9)
                                 .addComponent(nameField)
-                                .addComponent(jTextField3))
-                            .addComponent(jTextField4, javax.swing.GroupLayout.PREFERRED_SIZE, 90, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addComponent(jButton4, javax.swing.GroupLayout.PREFERRED_SIZE, 144, javax.swing.GroupLayout.PREFERRED_SIZE))
+                                .addComponent(brutoLoonField))
+                            .addGroup(jPanel2Layout.createSequentialGroup()
+                                .addComponent(nettoLoonField, javax.swing.GroupLayout.PREFERRED_SIZE, 90, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                .addComponent(jLabel13))
+                            .addComponent(opslaanButton, javax.swing.GroupLayout.PREFERRED_SIZE, 144, javax.swing.GroupLayout.PREFERRED_SIZE))
                         .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))))
             .addGroup(jPanel2Layout.createSequentialGroup()
                 .addContainerGap()
                 .addComponent(jLabel15)
-                .addGap(0, 230, Short.MAX_VALUE))
+                .addGap(0, 235, Short.MAX_VALUE))
         );
         jPanel2Layout.setVerticalGroup(
             jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -347,20 +357,21 @@ public class MainFrame extends javax.swing.JFrame {
                 .addComponent(jLabel9)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(jTextField3, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(brutoLoonField, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(jLabel11))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addComponent(jLabel10)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(jTextField4, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(jLabel12))
+                    .addComponent(nettoLoonField, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(jLabel12)
+                    .addComponent(jLabel13))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addComponent(jLabel7)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(jComboBox1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                .addComponent(jButton4, javax.swing.GroupLayout.PREFERRED_SIZE, 54, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 61, Short.MAX_VALUE)
+                .addComponent(opslaanButton, javax.swing.GroupLayout.PREFERRED_SIZE, 54, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGap(41, 41, 41)
                 .addComponent(jLabel15)
                 .addContainerGap())
@@ -381,6 +392,20 @@ public class MainFrame extends javax.swing.JFrame {
 
         pack();
     }// </editor-fold>//GEN-END:initComponents
+
+    private void opslaanButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_opslaanButtonActionPerformed
+        // TODO add your handling code here:   
+        if(nameField.getText().trim().isEmpty()){
+            JOptionPane.showMessageDialog(null, "U heeft uw naam niet ingevuld");
+        } else if (brutoLoonField.getText().trim().isEmpty()){
+            JOptionPane.showMessageDialog(null, "U heeft uw bruto loon niet ingevuld");
+        } else if (nettoLoonField.getText().trim().isEmpty()){
+            JOptionPane.showMessageDialog(null, "U heeft uw netto loon niet ingevuld");
+        } else { 
+            User user = createUser(); 
+        }
+        
+    }//GEN-LAST:event_opslaanButtonActionPerformed
 
     public static void main(String args[]) {
         //<editor-fold defaultstate="collapsed" desc=" Look and feel setting code (optional) ">
@@ -405,6 +430,7 @@ public class MainFrame extends javax.swing.JFrame {
         }
         //</editor-fold>
 
+
         /* Create and display the form */
         java.awt.EventQueue.invokeLater(new Runnable() {
             public void run() {
@@ -415,6 +441,16 @@ public class MainFrame extends javax.swing.JFrame {
                 mf.setLocationRelativeTo(null);
             }
         });
+    }
+
+    private User createUser() {
+        User user = new User(nameField.getText(), convertToDouble(brutoLoonField.getText()), convertToDouble(nettoLoonField.getText()));
+        return user;
+    }
+
+    private double convertToDouble(String inputLoon) { // Maak methode convertToDouble
+        double loon = Double.parseDouble(inputLoon);
+        return loon;
     }
 
     private void getDate() {
@@ -454,13 +490,13 @@ public class MainFrame extends javax.swing.JFrame {
         JOptionPane.showMessageDialog(null, "Welkom! Vul A.U.B. uw informatie in bij de 'gebruikers info' tab.");
     }
     // Variables declaration - do not modify//GEN-BEGIN:variables
+    private javax.swing.JTextField brutoLoonField;
     private javax.swing.JTextField dayField;
     private javax.swing.JComboBox filterJaarCombo;
     private javax.swing.JComboBox filterMaandCombo;
     private javax.swing.JButton jButton1;
     private javax.swing.JButton jButton2;
     private javax.swing.JButton jButton3;
-    private javax.swing.JButton jButton4;
     private javax.swing.JButton jButton5;
     private javax.swing.JComboBox jComboBox1;
     private javax.swing.JComboBox jComboBox4;
@@ -468,6 +504,7 @@ public class MainFrame extends javax.swing.JFrame {
     private javax.swing.JLabel jLabel10;
     private javax.swing.JLabel jLabel11;
     private javax.swing.JLabel jLabel12;
+    private javax.swing.JLabel jLabel13;
     private javax.swing.JLabel jLabel15;
     private javax.swing.JLabel jLabel2;
     private javax.swing.JLabel jLabel3;
@@ -484,10 +521,10 @@ public class MainFrame extends javax.swing.JFrame {
     private javax.swing.JPanel jPanel5;
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JTabbedPane jTabbedPane1;
-    private javax.swing.JTextField jTextField3;
-    private javax.swing.JTextField jTextField4;
     private javax.swing.JTextField monthField;
     private javax.swing.JTextField nameField;
+    private javax.swing.JTextField nettoLoonField;
+    private javax.swing.JButton opslaanButton;
     private javax.swing.JComboBox urenCombo;
     private javax.swing.JTable workTimeTable;
     private javax.swing.JTextField yearField;

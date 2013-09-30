@@ -21,9 +21,9 @@ public class User {
     
     public User(String name, double brutoUurloon, double nettoUurloon) {
         workHours = new ArrayList<WorkHours>();
-        this.name = name;
-        this.brutoUurloon = brutoUurloon;
-        this.nettoUurloon = nettoUurloon;
+        setName(name);
+        setBrutoUurloon(brutoUurloon);
+        setNettoUurloon(nettoUurloon);
     }
 
     public List<WorkHours> getWorkHours() {
@@ -47,6 +47,8 @@ public class User {
     }
 
     public void setName(String name) {
+        if (trimmedNameIsEmpty(name)) 
+            throw new IllegalArgumentException("Voer een legide waarde voor naam in!");
         this.name = name;
     }
 
@@ -64,6 +66,10 @@ public class User {
 
     public void setNettoUurloon(Double nettoUurloon) {
         this.nettoUurloon = nettoUurloon;
+    }
+    
+    private boolean trimmedNameIsEmpty(String name) {
+        return name.trim().isEmpty();
     }
     
     
