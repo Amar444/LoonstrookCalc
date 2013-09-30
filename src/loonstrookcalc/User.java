@@ -6,6 +6,7 @@ package loonstrookcalc;
 
 import java.util.ArrayList;
 import java.util.List;
+import javax.swing.JOptionPane;
 
 /**
  *
@@ -16,8 +17,8 @@ public class User {
     private List<WorkHours> workHours;
     private int id;
     private String name;    
-    private Double brutoUurloon;
-    private Double nettoUurloon;
+    private double brutoUurloon;
+    private double nettoUurloon;
     
     public User(String name, double brutoUurloon, double nettoUurloon) {
         workHours = new ArrayList<WorkHours>();
@@ -48,7 +49,7 @@ public class User {
 
     public void setName(String name) {
         if (trimmedNameIsEmpty(name)) 
-            throw new IllegalArgumentException("Voer een legide waarde voor naam in!");
+            JOptionPane.showMessageDialog(null, "U heeft uw naam niet ingevuld");
         this.name = name;
     }
 
@@ -56,7 +57,7 @@ public class User {
         return brutoUurloon;
     }
 
-    public void setBrutoUurloon(Double brutoUurloon) {
+    public void setBrutoUurloon(double brutoUurloon) {
         this.brutoUurloon = brutoUurloon;
     }
 
@@ -64,7 +65,7 @@ public class User {
         return nettoUurloon;
     }
 
-    public void setNettoUurloon(Double nettoUurloon) {
+    public void setNettoUurloon(double nettoUurloon) {       
         this.nettoUurloon = nettoUurloon;
     }
     
@@ -72,7 +73,5 @@ public class User {
         return name.trim().isEmpty();
     }
     
-    
-    
-    
+     
 }

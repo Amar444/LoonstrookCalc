@@ -395,16 +395,14 @@ public class MainFrame extends javax.swing.JFrame {
 
     private void opslaanButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_opslaanButtonActionPerformed
         // TODO add your handling code here:   
-        if(nameField.getText().trim().isEmpty()){
-            JOptionPane.showMessageDialog(null, "U heeft uw naam niet ingevuld");
-        } else if (brutoLoonField.getText().trim().isEmpty()){
+        if (brutoLoonField.getText().trim().isEmpty()){
             JOptionPane.showMessageDialog(null, "U heeft uw bruto loon niet ingevuld");
         } else if (nettoLoonField.getText().trim().isEmpty()){
             JOptionPane.showMessageDialog(null, "U heeft uw netto loon niet ingevuld");
         } else { 
-            User user = createUser(); 
+            User user = createUser();
         }
-        
+                                
     }//GEN-LAST:event_opslaanButtonActionPerformed
 
     public static void main(String args[]) {
@@ -442,13 +440,23 @@ public class MainFrame extends javax.swing.JFrame {
             }
         });
     }
+    
+   
 
-    private User createUser() {
+    private User createUser() {       
+        
+        if(convertToDouble(nettoLoonField.getText()) == 0){
+            double netto = convertToDouble(brutoLoonField.getText()) /100 * 68; //AFRONDEN OP 2 CIJFERS?!
+            String nettoEind = String.valueOf(netto);
+            
+            nettoLoonField.setText(nettoEind);            
+        }
+        
         User user = new User(nameField.getText(), convertToDouble(brutoLoonField.getText()), convertToDouble(nettoLoonField.getText()));
         return user;
     }
 
-    private double convertToDouble(String inputLoon) { // Maak methode convertToDouble
+    private double convertToDouble(String inputLoon) {
         double loon = Double.parseDouble(inputLoon);
         return loon;
     }
