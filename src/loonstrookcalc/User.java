@@ -14,24 +14,28 @@ import javax.swing.JOptionPane;
  */
 public class User {
     
-    private List<WorkHours> workHours;
+    private List<WorkHour> workHours;
     private int id;
     private String name;    
     private double brutoUurloon;
     private double nettoUurloon;
     
     public User(String name, double brutoUurloon, double nettoUurloon) {
-        workHours = new ArrayList<WorkHours>();
+        workHours = new ArrayList<WorkHour>();
         setName(name);
         setBrutoUurloon(brutoUurloon);
         setNettoUurloon(nettoUurloon);
     }
 
-    public List<WorkHours> getWorkHours() {
+    public void addWorkHour(WorkHour w){
+        workHours.add(w);
+    }
+    
+    public List<WorkHour> getWorkHours() {
         return workHours;
     }
 
-    public void setWorkHours(List<WorkHours> workHours) {
+    public void setWorkHours(List<WorkHour> workHours) {
         this.workHours = workHours;
     }
 
@@ -48,8 +52,6 @@ public class User {
     }
 
     public void setName(String name) {
-        if (trimmedNameIsEmpty(name)) 
-            JOptionPane.showMessageDialog(null, "U heeft uw naam niet ingevuld");
         this.name = name;
     }
 
@@ -68,10 +70,7 @@ public class User {
     public void setNettoUurloon(double nettoUurloon) {       
         this.nettoUurloon = nettoUurloon;
     }
-    
-    private boolean trimmedNameIsEmpty(String name) {
-        return name.trim().isEmpty();
-    }
+   
     
      
 }

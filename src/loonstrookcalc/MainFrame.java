@@ -4,6 +4,7 @@
  */
 package loonstrookcalc;
 
+import java.math.BigDecimal;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
@@ -17,12 +18,12 @@ import javax.swing.table.DefaultTableModel;
 public class MainFrame extends javax.swing.JFrame {
 
     private DefaultTableModel myModel;
+    private User user;
 
     public MainFrame() {
-        initComponents(); //Altijd als eerste laten
+        initComponents();
         initializeFrame();
         myModel = (DefaultTableModel) workTimeTable.getModel();
-        //nameField.setText("Amar");
         getDate();
         checkIfNewUser();
 
@@ -61,12 +62,13 @@ public class MainFrame extends javax.swing.JFrame {
         yearField = new javax.swing.JTextField();
         jLabel3 = new javax.swing.JLabel();
         urenCombo = new javax.swing.JComboBox();
-        jButton1 = new javax.swing.JButton();
+        addWorkhours = new javax.swing.JButton();
         jLabel8 = new javax.swing.JLabel();
-        jComboBox4 = new javax.swing.JComboBox();
+        factorBox = new javax.swing.JComboBox();
+        jLabel14 = new javax.swing.JLabel();
         jPanel4 = new javax.swing.JPanel();
         jLabel4 = new javax.swing.JLabel();
-        jLabel5 = new javax.swing.JLabel();
+        inkomstenMaand = new javax.swing.JLabel();
         jLabel6 = new javax.swing.JLabel();
         filterMaandCombo = new javax.swing.JComboBox();
         filterJaarCombo = new javax.swing.JComboBox();
@@ -99,7 +101,7 @@ public class MainFrame extends javax.swing.JFrame {
                 {null, null, null, null}
             },
             new String [] {
-                "Datum", "Uren", "Euro", "Factor"
+                "Datum", "Uren", "Euro (N)", "Factor"
             }
         ) {
             boolean[] canEdit = new boolean [] {
@@ -128,11 +130,18 @@ public class MainFrame extends javax.swing.JFrame {
 
         urenCombo.setModel(new javax.swing.DefaultComboBoxModel(new String[] { " " }));
 
-        jButton1.setText("Voeg toe");
+        addWorkhours.setText("Voeg toe");
+        addWorkhours.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                addWorkhoursActionPerformed(evt);
+            }
+        });
 
         jLabel8.setText("Loonfactor");
 
-        jComboBox4.setModel(new javax.swing.DefaultComboBoxModel(new String[] { "100%", "110%", "120%", "130%", "140%", "150%", "160%", "170%", "180%", "190%", "200%", "210%", "220%", "230%", "240%", "250%", "260%", "270%", "280%", "290%", "300%", "310%", "320%", "330%", "340%", "350%" }));
+        factorBox.setModel(new javax.swing.DefaultComboBoxModel(new String[] { "100", "110", "120", "130", "140", "150", "160", "170", "180", "190", "200", "210", "220", "230", "240", "250", "260", "270", "280", "290", "300", "310", "320", "330", "340", "350" }));
+
+        jLabel14.setText("%");
 
         javax.swing.GroupLayout jPanel3Layout = new javax.swing.GroupLayout(jPanel3);
         jPanel3.setLayout(jPanel3Layout);
@@ -145,14 +154,17 @@ public class MainFrame extends javax.swing.JFrame {
                     .addComponent(jLabel3, javax.swing.GroupLayout.DEFAULT_SIZE, 144, Short.MAX_VALUE)
                     .addComponent(urenCombo, javax.swing.GroupLayout.PREFERRED_SIZE, 112, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(jLabel8)
-                    .addComponent(jComboBox4, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addGroup(jPanel3Layout.createSequentialGroup()
+                        .addComponent(factorBox, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(jLabel14))
                     .addGroup(jPanel3Layout.createSequentialGroup()
                         .addComponent(dayField, javax.swing.GroupLayout.PREFERRED_SIZE, 30, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                         .addComponent(monthField, javax.swing.GroupLayout.PREFERRED_SIZE, 30, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(yearField))
-                    .addComponent(jButton1, javax.swing.GroupLayout.PREFERRED_SIZE, 112, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addComponent(addWorkhours, javax.swing.GroupLayout.PREFERRED_SIZE, 112, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
         jPanel3Layout.setVerticalGroup(
@@ -173,15 +185,17 @@ public class MainFrame extends javax.swing.JFrame {
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addComponent(jLabel8)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(jComboBox4, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(factorBox, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(jLabel14))
                 .addGap(18, 18, 18)
-                .addComponent(jButton1, javax.swing.GroupLayout.PREFERRED_SIZE, 42, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addComponent(addWorkhours, javax.swing.GroupLayout.PREFERRED_SIZE, 42, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addContainerGap(24, Short.MAX_VALUE))
         );
 
         jLabel4.setText("(Netto) Inkomsten deze maand:");
 
-        jLabel5.setText("€ 500,45");
+        inkomstenMaand.setText("€ 500,45");
 
         jLabel6.setText("Filter op maand:");
 
@@ -197,7 +211,7 @@ public class MainFrame extends javax.swing.JFrame {
                     .addGroup(jPanel4Layout.createSequentialGroup()
                         .addComponent(jLabel4)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                        .addComponent(jLabel5))
+                        .addComponent(inkomstenMaand))
                     .addGroup(jPanel4Layout.createSequentialGroup()
                         .addComponent(jLabel6)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
@@ -214,7 +228,7 @@ public class MainFrame extends javax.swing.JFrame {
                 .addContainerGap()
                 .addGroup(jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jLabel4)
-                    .addComponent(jLabel5))
+                    .addComponent(inkomstenMaand))
                 .addGap(18, 18, 18)
                 .addGroup(jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jLabel6)
@@ -256,7 +270,7 @@ public class MainFrame extends javax.swing.JFrame {
             .addGroup(jPanel1Layout.createSequentialGroup()
                 .addGap(32, 32, 32)
                 .addComponent(jPanel3, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 58, Short.MAX_VALUE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 63, Short.MAX_VALUE)
                 .addComponent(jPanel5, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGap(18, 18, 18)
                 .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 329, javax.swing.GroupLayout.PREFERRED_SIZE)
@@ -276,9 +290,12 @@ public class MainFrame extends javax.swing.JFrame {
                             .addComponent(jPanel3, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                             .addGroup(jPanel1Layout.createSequentialGroup()
                                 .addGap(20, 20, 20)
-                                .addComponent(jPanel5, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))))
-                    .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 292, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 20, Short.MAX_VALUE)
+                                .addComponent(jPanel5, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel1Layout.createSequentialGroup()
+                        .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                        .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 292, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)))
                 .addComponent(jPanel4, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGap(13, 13, 13))
         );
@@ -344,7 +361,7 @@ public class MainFrame extends javax.swing.JFrame {
             .addGroup(jPanel2Layout.createSequentialGroup()
                 .addContainerGap()
                 .addComponent(jLabel15)
-                .addGap(0, 235, Short.MAX_VALUE))
+                .addGap(0, 240, Short.MAX_VALUE))
         );
         jPanel2Layout.setVerticalGroup(
             jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -394,16 +411,87 @@ public class MainFrame extends javax.swing.JFrame {
     }// </editor-fold>//GEN-END:initComponents
 
     private void opslaanButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_opslaanButtonActionPerformed
-        // TODO add your handling code here:   
-        if (brutoLoonField.getText().trim().isEmpty()){
-            JOptionPane.showMessageDialog(null, "U heeft uw bruto loon niet ingevuld");
-        } else if (nettoLoonField.getText().trim().isEmpty()){
-            JOptionPane.showMessageDialog(null, "U heeft uw netto loon niet ingevuld");
-        } else { 
-            User user = createUser();
+        // TODO add your handling code here:  
+        try {
+            if (nameField.getText().trim().isEmpty()) {
+                JOptionPane.showMessageDialog(null, "U heeft uw naam niet ingevuld");
+            } else if (brutoLoonField.getText().trim().isEmpty()) {
+                JOptionPane.showMessageDialog(null, "U heeft uw bruto loon niet ingevuld");
+            } else if (nettoLoonField.getText().trim().isEmpty()) {
+                JOptionPane.showMessageDialog(null, "U heeft uw netto loon niet ingevuld, laat 0 staan als u het niet weet.");
+            } else if (Integer.parseInt(brutoLoonField.getText()) <= 0 || Integer.parseInt(nettoLoonField.getText()) < 0) {
+                JOptionPane.showMessageDialog(null, "Vul A.U.B. een correct bedrag in.");
+            } else {
+                user = createUser();
+                JOptionPane.showMessageDialog(null, "Uw gegevens zijn opgeslagen");
+            }
+        } catch (NumberFormatException e) {
+            JOptionPane.showMessageDialog(null, "Voer alleen nummers in bij uw loon!");
         }
-                                
+
     }//GEN-LAST:event_opslaanButtonActionPerformed
+
+    private void addWorkhoursActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_addWorkhoursActionPerformed
+
+        try {
+            int dag = Integer.parseInt(dayField.getText());
+            int maand = Integer.parseInt(monthField.getText());
+            int jaar = Integer.parseInt(yearField.getText());
+            double uren = convertToDouble(urenCombo.getSelectedItem().toString());
+            int factor = Integer.parseInt(factorBox.getSelectedItem().toString());
+            double euros = (uren * convertToDouble(nettoLoonField.getText()) / 100 * factor);
+
+            if (dag < 1 || dag > 31 || maand < 1 || maand > 12) {
+                JOptionPane.showMessageDialog(null, "Voer een correcte datum in.");
+            } else {
+                WorkHour h = new WorkHour(dag, maand, jaar, uren, euros, factor);
+                user.addWorkHour(h);
+
+                fillTable();
+                urenCombo.setSelectedIndex(0);
+            }
+
+        } catch (NumberFormatException e) {
+            JOptionPane.showMessageDialog(null, "Sellecteer het aantal uur dat u heeft gewerkt.");
+        } catch (NullPointerException e) {
+            JOptionPane.showMessageDialog(null, "U heeft nog geen gebruiker aangemaakt!");
+            jTabbedPane1.setSelectedIndex(1);
+        }
+
+    }//GEN-LAST:event_addWorkhoursActionPerformed
+
+    public static double round(double value, int places) {
+        if (places < 0) {
+            throw new IllegalArgumentException();
+        }
+
+        BigDecimal bd = new BigDecimal(value);
+        bd = bd.setScale(places, BigDecimal.ROUND_HALF_UP);
+        return bd.doubleValue();
+    }
+
+    private void fillTable() {
+        double euros = 0;
+        myModel.setRowCount(0);
+        
+        for (WorkHour workhour : user.getWorkHours()) {
+            myModel.addRow(new Object[]{createDate(workhour.getDay(), workhour.getMonth(), workhour.getYear()), workhour.getHours(), round(workhour.getEuro(), 2), workhour.getFactor()});
+            euros += round(workhour.getEuro(),2);
+        }
+        
+        inkomstenMaand.setText("€" + String.valueOf(euros));
+    }
+
+    public static String createDate(int dag, int maand, int jaar) {
+        return createDateNotation(dag) + "-" + createDateNotation(maand) + "-" + jaar;
+    }
+
+    public static String createDateNotation(int date) {
+        if (date < 10) {
+            return "0" + date;
+        }
+        return String.valueOf(date);
+    }
 
     public static void main(String args[]) {
         //<editor-fold defaultstate="collapsed" desc=" Look and feel setting code (optional) ">
@@ -440,18 +528,16 @@ public class MainFrame extends javax.swing.JFrame {
             }
         });
     }
-    
-   
 
-    private User createUser() {       
-        
-        if(convertToDouble(nettoLoonField.getText()) == 0){
-            double netto = convertToDouble(brutoLoonField.getText()) /100 * 68; //AFRONDEN OP 2 CIJFERS?!
+    private User createUser() {
+
+        if (convertToDouble(nettoLoonField.getText()) == 0) {
+            double netto = round(convertToDouble(brutoLoonField.getText()) / 100 * 70, 2);
             String nettoEind = String.valueOf(netto);
-            
-            nettoLoonField.setText(nettoEind);            
+
+            nettoLoonField.setText(nettoEind);
         }
-        
+
         User user = new User(nameField.getText(), convertToDouble(brutoLoonField.getText()), convertToDouble(nettoLoonField.getText()));
         return user;
     }
@@ -495,29 +581,31 @@ public class MainFrame extends javax.swing.JFrame {
     }
 
     private void firstTimeMessage() {
-        JOptionPane.showMessageDialog(null, "Welkom! Vul A.U.B. uw informatie in bij de 'gebruikers info' tab.");
+        JOptionPane.showMessageDialog(null, "Welkom! Vul A.U.B. eerst uw informatie in.");
+        jTabbedPane1.setSelectedIndex(1);
     }
     // Variables declaration - do not modify//GEN-BEGIN:variables
+    private javax.swing.JButton addWorkhours;
     private javax.swing.JTextField brutoLoonField;
     private javax.swing.JTextField dayField;
+    private javax.swing.JComboBox factorBox;
     private javax.swing.JComboBox filterJaarCombo;
     private javax.swing.JComboBox filterMaandCombo;
-    private javax.swing.JButton jButton1;
+    private javax.swing.JLabel inkomstenMaand;
     private javax.swing.JButton jButton2;
     private javax.swing.JButton jButton3;
     private javax.swing.JButton jButton5;
     private javax.swing.JComboBox jComboBox1;
-    private javax.swing.JComboBox jComboBox4;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel10;
     private javax.swing.JLabel jLabel11;
     private javax.swing.JLabel jLabel12;
     private javax.swing.JLabel jLabel13;
+    private javax.swing.JLabel jLabel14;
     private javax.swing.JLabel jLabel15;
     private javax.swing.JLabel jLabel2;
     private javax.swing.JLabel jLabel3;
     private javax.swing.JLabel jLabel4;
-    private javax.swing.JLabel jLabel5;
     private javax.swing.JLabel jLabel6;
     private javax.swing.JLabel jLabel7;
     private javax.swing.JLabel jLabel8;

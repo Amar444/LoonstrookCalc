@@ -8,7 +8,7 @@ package loonstrookcalc;
  *
  * @author Amar Tursic
  */
-public class WorkHours {
+public class WorkHour {
 
     private int id;
     private int day;
@@ -18,7 +18,7 @@ public class WorkHours {
     private double euro;
     private int factor;
     
-    public WorkHours(int day, int month, int year, double hours, double euro, int factor) {
+    public WorkHour(int day, int month, int year, double hours, double euro, int factor) {
         this.day = day;
         this.month = month;
         this.year = year;
