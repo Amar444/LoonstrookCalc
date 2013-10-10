@@ -2,7 +2,7 @@
  * To change this template, choose Tools | Templates
  * and open the template in the editor.
  */
-package loonstrookcalc;
+package model;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -25,6 +25,11 @@ public class User {
         setName(name);
         setBrutoUurloon(brutoUurloon);
         setNettoUurloon(nettoUurloon);
+    }
+    
+    public User(int id, String name, double brutoUurloon, double nettoUurloon) {
+        this(name, brutoUurloon, nettoUurloon); // Roep constructor 1 op
+        this.id = id;
     }
 
     public void addWorkHour(WorkHour w){
