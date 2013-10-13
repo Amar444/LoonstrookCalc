@@ -7,6 +7,8 @@ package database;
 import model.WorkHour;
 import model.User;
 import java.sql.*;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.logging.Logger;
 
 /**
@@ -20,6 +22,10 @@ public class DatabaseConnection {
     private static ResultSet rs = null;
     private static Logger logger = Logger.getLogger("Database Connection");
 
+    /**
+     * Opens the database connection
+     * @return database successfully openened
+     */
     public static boolean openConnection() {
         try {
             Class.forName("org.sqlite.JDBC"); // Zoekt een class op naam, en initialiseert
@@ -57,7 +63,13 @@ public class DatabaseConnection {
         return false;
     }
 
-    public static boolean insertWorkHour(WorkHour workHour) {
+    /**
+     * Inserts a given workhour in the database, links it to the given id
+     * @param id 
+     * @param workHour 
+     * @return successfull
+     */
+    public static boolean insertWorkHour(int id, WorkHour workHour) {
         boolean successfull = false;
 
         try {
@@ -68,7 +80,7 @@ public class DatabaseConnection {
             stmt.setDouble(4, workHour.getEuro());
             stmt.setInt(5, workHour.getFactor());
             stmt.setDouble(6, workHour.getHours());
-            stmt.setInt(7, 1);
+            stmt.setInt(7, id);
 
             successfull = stmt.executeUpdate() > 0;
             logger.info(String.valueOf(successfull));
@@ -88,6 +100,11 @@ public class DatabaseConnection {
 
     }
 
+    /**
+     * Inserts a given user
+     * @param user
+     * @return successfully inserted
+     */
     public static boolean insertUser(User user) {
         boolean successfull = false;
 
@@ -116,6 +133,9 @@ public class DatabaseConnection {
 
     }
 
+    /**
+     *
+     */
     public static void closeConnection() {
         try {
             System.exit(0);
@@ -124,6 +144,7 @@ public class DatabaseConnection {
         }
     }
 
+        
     private static void closeConnection(Exception e) {
         try {
             logger.severe(e.getMessage());
@@ -133,7 +154,10 @@ public class DatabaseConnection {
         }
 
     }
-
+    /** 
+     * Retrieves the user from the database
+     * @return user
+     */
     public static User getUser() { //Haal user op als deze bestaat
         User user = null;
         try {
@@ -146,9 +170,43 @@ public class DatabaseConnection {
                 double brutoLoon = rs.getDouble("brutoloon");
                 double nettoLoon = rs.getDouble("nettoloon");
                 user = new User(id, name, brutoLoon, nettoLoon);
+
+                ArrayList<WorkHour> workHours = getWorkHoursFromUserId(user.getId());
+                user.setWorkHours(workHours);
             }
         } catch (SQLException a) {
         }
         return user;
+    }
+
+    /**
+     * Retrieves workhours with given user_id
+     * @param id 
+     * @return ArrayList<WorkHour>
+     */
+    public static ArrayList<WorkHour> getWorkHoursFromUserId(int id) {
+        ArrayList<WorkHour> workHours = new ArrayList<WorkHour>();
+
+        try {
+            stmt = c.prepareStatement("SELECT * FROM workhours WHERE user_id = ? ORDER BY id DESC");
+            stmt.setInt(1, id);
+            rs = stmt.executeQuery();
+
+            while (rs.next()) {
+                int workId = rs.getInt("id");
+                int day = rs.getInt("day");
+                int month = rs.getInt("month");
+                int year = rs.getInt("year");
+                double hour = rs.getDouble("hour");
+                double euro = rs.getDouble("euro");
+                int factor = rs.getInt("factor");
+
+                workHours.add(new WorkHour(workId, day, month, year, hour, euro, factor));
+            }
+
+        } catch (SQLException b) {
+        }
+
+        return workHours;
     }
 }

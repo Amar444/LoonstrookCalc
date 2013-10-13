@@ -7,13 +7,13 @@ package loonstrookcalc;
 import database.DatabaseConnection;
 import model.WorkHour;
 import model.User;
-import java.math.BigDecimal;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import javax.swing.JOptionPane;
 import javax.swing.table.DefaultTableModel;
 import helpers.HelperFunctions;
+import java.util.Collections;
 
 /**
  *
@@ -29,7 +29,6 @@ public class MainFrame extends javax.swing.JFrame {
         initializeFrame();
         myModel = (DefaultTableModel) workTimeTable.getModel();
         getDate();
-
         setUser();
     }
 
@@ -49,6 +48,33 @@ public class MainFrame extends javax.swing.JFrame {
             filterMaandCombo.addItem(month);
         }
         nettoLoonField.setText("0");
+    }
+
+    private void setUser() {
+        user = DatabaseConnection.getUser();
+        if (user == null) {
+            checkIfNewUser();
+        } else {
+            nameField.setText(user.getName());
+            nettoLoonField.setText(String.valueOf(user.getNettoUurloon()));
+            brutoLoonField.setText(String.valueOf(user.getBrutoUurloon()));
+            opslaanButton.setEnabled(false);
+            fillTable();
+
+        }
+    }
+
+    private void fillTable() {
+        double euros = 0;
+        myModel.setRowCount(0);
+
+        for (WorkHour workhour : user.getWorkHours()) {
+            myModel.addRow(new Object[]{HelperFunctions.createDate(workhour.getDay(), workhour.getMonth(), workhour.getYear()), workhour.getHours(), HelperFunctions.round(workhour.getEuro()), workhour.getFactor()});
+            euros += workhour.getEuro();
+        }
+        euros = HelperFunctions.round(euros);
+
+        inkomstenMaand.setText("€ " + String.valueOf(euros));
     }
 
     @SuppressWarnings("unchecked")
@@ -78,8 +104,8 @@ public class MainFrame extends javax.swing.JFrame {
         filterJaarCombo = new javax.swing.JComboBox();
         jButton5 = new javax.swing.JButton();
         jPanel5 = new javax.swing.JPanel();
-        jButton2 = new javax.swing.JButton();
-        jButton3 = new javax.swing.JButton();
+        editBtn = new javax.swing.JButton();
+        deleteBtn = new javax.swing.JButton();
         jPanel2 = new javax.swing.JPanel();
         jLabel2 = new javax.swing.JLabel();
         nameField = new javax.swing.JTextField();
@@ -240,9 +266,14 @@ public class MainFrame extends javax.swing.JFrame {
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
 
-        jButton2.setText("Edit -->");
+        editBtn.setText("Edit -->");
 
-        jButton3.setText("Delete -->");
+        deleteBtn.setText("Delete -->");
+        deleteBtn.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                deleteBtnActionPerformed(evt);
+            }
+        });
 
         javax.swing.GroupLayout jPanel5Layout = new javax.swing.GroupLayout(jPanel5);
         jPanel5.setLayout(jPanel5Layout);
@@ -251,17 +282,17 @@ public class MainFrame extends javax.swing.JFrame {
             .addGroup(jPanel5Layout.createSequentialGroup()
                 .addContainerGap()
                 .addGroup(jPanel5Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                    .addComponent(jButton2, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .addComponent(jButton3, javax.swing.GroupLayout.PREFERRED_SIZE, 100, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addComponent(editBtn, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addComponent(deleteBtn, javax.swing.GroupLayout.PREFERRED_SIZE, 100, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
         jPanel5Layout.setVerticalGroup(
             jPanel5Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanel5Layout.createSequentialGroup()
                 .addContainerGap()
-                .addComponent(jButton2, javax.swing.GroupLayout.PREFERRED_SIZE, 40, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addComponent(editBtn, javax.swing.GroupLayout.PREFERRED_SIZE, 40, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(jButton3, javax.swing.GroupLayout.PREFERRED_SIZE, 40, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addComponent(deleteBtn, javax.swing.GroupLayout.PREFERRED_SIZE, 40, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addContainerGap(46, Short.MAX_VALUE))
         );
 
@@ -400,31 +431,42 @@ public class MainFrame extends javax.swing.JFrame {
     private void opslaanButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_opslaanButtonActionPerformed
         // TODO add your handling code here:  
         try {
+            double netto = HelperFunctions.convertCurrencyToDoubleAndRound(nettoLoonField.getText());
+            double bruto = HelperFunctions.convertCurrencyToDoubleAndRound(brutoLoonField.getText());
+            String naam = nameField.getText();
             if (nameField.getText().trim().isEmpty()) {
                 JOptionPane.showMessageDialog(null, "U heeft uw naam niet ingevuld");
             } else if (brutoLoonField.getText().trim().isEmpty()) {
                 JOptionPane.showMessageDialog(null, "U heeft uw bruto loon niet ingevuld");
             } else if (nettoLoonField.getText().trim().isEmpty()) {
                 JOptionPane.showMessageDialog(null, "U heeft uw netto loon niet ingevuld, laat 0 staan als u het niet weet.");
-            } else if (HelperFunctions.convertToDouble(brutoLoonField.getText()) <= 0 || HelperFunctions.convertToDouble(nettoLoonField.getText()) < 0) {
+            } else if (bruto <= 0 || netto < 0) {
                 JOptionPane.showMessageDialog(null, "Vul A.U.B. een correct bedrag in.");
             } else {
 
-
-
-                user = createUser();
-                DatabaseConnection.insertUser(user);
-                JOptionPane.showMessageDialog(null, "Uw gegevens zijn opgeslagen");
-
+                user = createUser(naam, bruto, netto);
+                if (DatabaseConnection.insertUser(user)) {
+                    JOptionPane.showMessageDialog(null, "Uw gegevens zijn opgeslagen");
+                    opslaanButton.setEnabled(false);
+                }
 
             }
         } catch (NumberFormatException e) {
             JOptionPane.showMessageDialog(null, "Voer alleen nummers in bij uw loon!");
         }
 
-        //METHODE , naar . CONVERTEN!
+
 
     }//GEN-LAST:event_opslaanButtonActionPerformed
+    private User createUser(String naam, double bruto, double netto) {
+        if (netto == 0) {
+            netto = bruto / 100 * 70;
+            String nettoEind = String.valueOf(netto);
+            nettoLoonField.setText(nettoEind);
+        }
+        return (new User(naam, bruto, netto));
+
+    }
 
     private void addWorkhoursActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_addWorkhoursActionPerformed
 
@@ -435,7 +477,7 @@ public class MainFrame extends javax.swing.JFrame {
             double uren = HelperFunctions.convertToDouble(urenCombo.getSelectedItem().toString());
             int factor = Integer.parseInt(factorBox.getSelectedItem().toString());
             double euros = (uren * HelperFunctions.convertToDouble(nettoLoonField.getText()) / 100 * factor);
-
+        
             if (monthGotCorrectValues(maand) && dayGotCorrectValues(dag)) {
                 JOptionPane.showMessageDialog(null, "Voer een correcte datum in.");
             } else {
@@ -462,7 +504,7 @@ public class MainFrame extends javax.swing.JFrame {
     }
 
     private void saveWorkHour(WorkHour h) {
-        if (DatabaseConnection.insertWorkHour(h)) {
+        if (DatabaseConnection.insertWorkHour(user.getId(), h)) {
             user.addWorkHour(h);
             urenCombo.setSelectedIndex(0);
             fillTable();
@@ -470,23 +512,13 @@ public class MainFrame extends javax.swing.JFrame {
             JOptionPane.showMessageDialog(null, "Er is iets misgegaan bij het opslaan");
         }
     }
+  
 
-    private void fillTable() {
-        double euros = 0;
-        myModel.setRowCount(0);
+    private void deleteBtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_deleteBtnActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_deleteBtnActionPerformed
 
-        for (WorkHour workhour : user.getWorkHours()) {
-            myModel.addRow(new Object[]{createDate(workhour.getDay(), workhour.getMonth(), workhour.getYear()), workhour.getHours(), HelperFunctions.round(workhour.getEuro(), 2), workhour.getFactor()});
-            euros += HelperFunctions.round(workhour.getEuro(), 2);
-        }
-
-        inkomstenMaand.setText("€ " + String.valueOf(euros));
-    }
-
-    public static String createDate(int dag, int maand, int jaar) {
-        return createDateNotation(dag) + "-" + createDateNotation(maand) + "-" + jaar;
-    }
-
+ 
     public static String createDateNotation(int date) {
         if (date < 10) {
             return "0" + date;
@@ -530,33 +562,6 @@ public class MainFrame extends javax.swing.JFrame {
         });
     }
 
-    private void setUser() {
-         user = DatabaseConnection.getUser();
-         if (user == null) {
-             checkIfNewUser();
-         }
-         else {
-             nameField.setText(user.getName());
-             nettoLoonField.setText(String.valueOf(user.getNettoUurloon()));
-             brutoLoonField.setText(String.valueOf(user.getBrutoUurloon()));
-             opslaanButton.setEnabled(false);
-             
-         }
-    }
-
-    private User createUser() {
-
-        if (HelperFunctions.convertToDouble(nettoLoonField.getText()) == 0) {
-            double netto = HelperFunctions.round(HelperFunctions.convertToDouble(brutoLoonField.getText()) / 100 * 70, 2);
-            String nettoEind = String.valueOf(netto);
-
-            nettoLoonField.setText(nettoEind);
-        }
-
-        User user = new User(nameField.getText(), HelperFunctions.convertToDouble(brutoLoonField.getText()), HelperFunctions.convertToDouble(nettoLoonField.getText()));
-        return user;
-    }
-
     private void getDate() {
         Calendar cal = Calendar.getInstance();  // Create new calendar instance      
         DateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy"); //Create format for day : Day
@@ -598,12 +603,12 @@ public class MainFrame extends javax.swing.JFrame {
     private javax.swing.JButton addWorkhours;
     private javax.swing.JTextField brutoLoonField;
     private javax.swing.JTextField dayField;
+    private javax.swing.JButton deleteBtn;
+    private javax.swing.JButton editBtn;
     private javax.swing.JComboBox factorBox;
     private javax.swing.JComboBox filterJaarCombo;
     private javax.swing.JComboBox filterMaandCombo;
     private javax.swing.JLabel inkomstenMaand;
-    private javax.swing.JButton jButton2;
-    private javax.swing.JButton jButton3;
     private javax.swing.JButton jButton5;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel10;
