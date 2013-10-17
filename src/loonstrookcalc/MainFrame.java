@@ -13,7 +13,6 @@ import java.util.Calendar;
 import javax.swing.JOptionPane;
 import javax.swing.table.DefaultTableModel;
 import helpers.HelperFunctions;
-import java.util.Collections;
 
 /**
  *
@@ -33,8 +32,11 @@ public class MainFrame extends javax.swing.JFrame {
     }
 
     private void initializeFrame() {
-        for (double j = 1; j <= 80; j++) {
-            urenCombo.addItem(j / 4);
+        for (int j = 1; j <= 80; j++) {
+            urenCombo.addItem((double)j / 4);
+        }
+        for (int i = 100; i <= 350; i = i + 10){
+            factorBox.addItem(i);
         }
         int year = Calendar.getInstance().get(Calendar.YEAR) + 4;
         for (int i = 2013; i <= year; i++) {
@@ -64,7 +66,7 @@ public class MainFrame extends javax.swing.JFrame {
         }
     }
 
-    private void fillTable() {
+    public void fillTable() {
         double euros = 0;
         myModel.setRowCount(0);
 
@@ -120,13 +122,11 @@ public class MainFrame extends javax.swing.JFrame {
         jLabel13 = new javax.swing.JLabel();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
+        setTitle("Loonstrook Calculator");
 
         workTimeTable.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
-                {null, null, null, null},
-                {null, null, null, null},
-                {null, null, null, null},
-                {null, null, null, null}
+
             },
             new String [] {
                 "Datum", "Uren", "Euro (N)", "Factor"
@@ -166,8 +166,6 @@ public class MainFrame extends javax.swing.JFrame {
         });
 
         jLabel8.setText("Loonfactor");
-
-        factorBox.setModel(new javax.swing.DefaultComboBoxModel(new String[] { "100", "110", "120", "130", "140", "150", "160", "170", "180", "190", "200", "210", "220", "230", "240", "250", "260", "270", "280", "290", "300", "310", "320", "330", "340", "350" }));
 
         jLabel14.setText("%");
 
@@ -267,6 +265,11 @@ public class MainFrame extends javax.swing.JFrame {
         );
 
         editBtn.setText("Edit -->");
+        editBtn.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                editBtnActionPerformed(evt);
+            }
+        });
 
         deleteBtn.setText("Delete -->");
         deleteBtn.addActionListener(new java.awt.event.ActionListener() {
@@ -476,9 +479,9 @@ public class MainFrame extends javax.swing.JFrame {
             int jaar = Integer.parseInt(yearField.getText());
             double uren = HelperFunctions.convertToDouble(urenCombo.getSelectedItem().toString());
             int factor = Integer.parseInt(factorBox.getSelectedItem().toString());
-            double euros = (uren * HelperFunctions.convertToDouble(nettoLoonField.getText()) / 100 * factor);
-        
-            if (monthGotCorrectValues(maand) && dayGotCorrectValues(dag)) {
+            double euros = calculateEuro(uren,factor);
+
+            if (monthGotCorrectValues(maand) || dayGotCorrectValues(dag)) {
                 JOptionPane.showMessageDialog(null, "Voer een correcte datum in.");
             } else {
                 WorkHour h = new WorkHour(dag, maand, jaar, uren, euros, factor);
@@ -495,11 +498,11 @@ public class MainFrame extends javax.swing.JFrame {
 
     }//GEN-LAST:event_addWorkhoursActionPerformed
 
-    private boolean monthGotCorrectValues(int maand) {
+    public boolean monthGotCorrectValues(int maand) {
         return maand < 1 || maand > 12;
     }
 
-    private boolean dayGotCorrectValues(int dag) {
+    public boolean dayGotCorrectValues(int dag) {
         return dag < 1 || dag > 31;
     }
 
@@ -512,13 +515,40 @@ public class MainFrame extends javax.swing.JFrame {
             JOptionPane.showMessageDialog(null, "Er is iets misgegaan bij het opslaan");
         }
     }
-  
 
     private void deleteBtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_deleteBtnActionPerformed
-        // TODO add your handling code here:
+        int row = workTimeTable.getSelectedRow();
+
+        if (row > -1) {
+            WorkHour w = user.getWorkHours().get(row);
+            removeWorkday(w);
+        } else {
+            JOptionPane.showMessageDialog(null, "U heeft niks geselecteerd.");
+        }
     }//GEN-LAST:event_deleteBtnActionPerformed
 
- 
+    private void editBtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_editBtnActionPerformed
+        int row = workTimeTable.getSelectedRow();
+        
+        if (row > -1) {
+            WorkHour w = user.getWorkHours().get(row);
+            EditWorkHour edit = new EditWorkHour( this, w );
+            edit.setVisible(true);
+            edit.setResizable(false);
+            edit.setLocationRelativeTo(null);
+        } else {
+            JOptionPane.showMessageDialog(null, "U heeft niks geselecteerd.");
+        }
+    }//GEN-LAST:event_editBtnActionPerformed
+
+    private void removeWorkday(WorkHour removeDay) {
+        if (DatabaseConnection.deleteUren(removeDay)) {
+            user.getWorkHours().remove(removeDay);
+
+            fillTable();
+        }
+    }
+
     public static String createDateNotation(int date) {
         if (date < 10) {
             return "0" + date;
@@ -589,6 +619,12 @@ public class MainFrame extends javax.swing.JFrame {
                 }
             }
         };
+    }
+    
+    public double calculateEuro(double uren,int factor){
+        
+    double euros = (uren * HelperFunctions.convertToDouble(nettoLoonField.getText()) / 100 * factor);
+    return euros;
     }
 
     private boolean isNewUser() {

@@ -209,4 +209,17 @@ public class DatabaseConnection {
 
         return workHours;
     }
+    
+    public static boolean deleteUren(WorkHour hour) {
+        try {
+            stmt = c.prepareStatement("DELETE FROM workhours WHERE id = ?");
+            stmt.setInt(1, hour.getId());           
+            return stmt.executeUpdate() > 0;  
+        }
+        catch(SQLException e) {
+            logger.info("Delete failed: " + e.getMessage());
+        }
+        return false;
+    }
+    
 }
