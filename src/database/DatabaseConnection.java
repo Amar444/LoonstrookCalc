@@ -222,4 +222,22 @@ public class DatabaseConnection {
         return false;
     }
     
+    public static boolean editUren(WorkHour hour){
+        try{
+            stmt = c.prepareStatement("UPDATE workhours SET day = ?, month = ?, year = ?, hour = ?, euro = ?, factor = ? WHERE id = ? ");
+            stmt.setInt (1, hour.getDay() );
+            stmt.setInt (2, hour.getMonth() );
+            stmt.setInt (3, hour.getYear() );
+            stmt.setDouble (4, hour.getHours() );
+            stmt.setDouble (5, hour.getEuro() );
+            stmt.setInt (6, hour.getFactor() );
+            stmt.setInt (7, hour.getId() ); 
+            return stmt.executeUpdate() > 0;  
+        }
+        catch(SQLException e){
+            logger.info("Edit failed: " + e.getMessage());
+        }
+        return true;
+    }
+    
 }

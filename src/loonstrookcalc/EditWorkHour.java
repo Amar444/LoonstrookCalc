@@ -4,6 +4,7 @@
  */
 package loonstrookcalc;
 
+import database.DatabaseConnection;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import javax.swing.JOptionPane;
@@ -158,23 +159,22 @@ public class EditWorkHour extends javax.swing.JFrame {
 
     private void editBtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_editBtnActionPerformed
 
-
-        if (mainframe.monthGotCorrectValues(Integer.parseInt(monthField.getText())) || mainframe.dayGotCorrectValues(Integer.parseInt(dayField.getText()))) {
+        if (mainframe.monthGotIncorrectValues(Integer.parseInt(monthField.getText())) || mainframe.dayGotIncorrectValues(Integer.parseInt(dayField.getText()))) {
             JOptionPane.showMessageDialog(null, "Voer een correcte datum in.");
         } else {
-            workhour.setDay(Integer.parseInt(dayField.getText()));
-            workhour.setMonth(Integer.parseInt(monthField.getText()));
-            workhour.setYear(Integer.parseInt(yearField.getText()));
-            workhour.setHours(Double.parseDouble(String.valueOf(urenCombo.getSelectedItem())));
-            workhour.setFactor(Integer.parseInt(String.valueOf(factorCombo.getSelectedItem())));
-            workhour.setEuro(mainframe.calculateEuro(workhour.getHours(), workhour.getFactor()));
-            mainframe.setEnabled(true);
-            dispose();
-            mainframe.fillTable();
-            JOptionPane.showMessageDialog(null, "Amar, je moet dit nog naar de db schrijven!");
+            if (DatabaseConnection.editUren(workhour)) {
+                workhour.setDay(Integer.parseInt(dayField.getText()));
+                workhour.setMonth(Integer.parseInt(monthField.getText()));
+                workhour.setYear(Integer.parseInt(yearField.getText()));
+                workhour.setHours(Double.parseDouble(String.valueOf(urenCombo.getSelectedItem())));
+                workhour.setFactor(Integer.parseInt(String.valueOf(factorCombo.getSelectedItem())));
+                workhour.setEuro(mainframe.calculateEuro(workhour.getHours(), workhour.getFactor()));
+
+                mainframe.setEnabled(true);
+                dispose();
+                mainframe.fillTable();
+            }
         }
-
-
 
     }//GEN-LAST:event_editBtnActionPerformed
 

@@ -481,7 +481,7 @@ public class MainFrame extends javax.swing.JFrame {
             int factor = Integer.parseInt(factorBox.getSelectedItem().toString());
             double euros = calculateEuro(uren,factor);
 
-            if (monthGotCorrectValues(maand) || dayGotCorrectValues(dag)) {
+            if (monthGotIncorrectValues(maand) || dayGotIncorrectValues(dag)) {
                 JOptionPane.showMessageDialog(null, "Voer een correcte datum in.");
             } else {
                 WorkHour h = new WorkHour(dag, maand, jaar, uren, euros, factor);
@@ -498,11 +498,11 @@ public class MainFrame extends javax.swing.JFrame {
 
     }//GEN-LAST:event_addWorkhoursActionPerformed
 
-    public boolean monthGotCorrectValues(int maand) {
+    public boolean monthGotIncorrectValues(int maand) {
         return maand < 1 || maand > 12;
     }
 
-    public boolean dayGotCorrectValues(int dag) {
+    public boolean dayGotIncorrectValues(int dag) {
         return dag < 1 || dag > 31;
     }
 
