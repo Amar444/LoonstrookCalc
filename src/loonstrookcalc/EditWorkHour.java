@@ -168,7 +168,7 @@ public class EditWorkHour extends javax.swing.JFrame {
                 workhour.setYear(Integer.parseInt(yearField.getText()));
                 workhour.setHours(Double.parseDouble(String.valueOf(urenCombo.getSelectedItem())));
                 workhour.setFactor(Integer.parseInt(String.valueOf(factorCombo.getSelectedItem())));
-                workhour.setEuro(mainframe.calculateEuro(workhour.getHours(), workhour.getFactor()));
+                workhour.setEuro( workhour.getHours() * workhour.getNettoLoon() / 100 * workhour.getFactor() );
 
                 mainframe.setEnabled(true);
                 dispose();
