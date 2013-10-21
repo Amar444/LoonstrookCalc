@@ -22,6 +22,7 @@ public class MainFrame extends javax.swing.JFrame {
 
     private DefaultTableModel myModel;
     private User user;
+    private Modus modus; //unused
 
     public MainFrame() {
         initComponents();
@@ -29,6 +30,11 @@ public class MainFrame extends javax.swing.JFrame {
         myModel = (DefaultTableModel) workTimeTable.getModel();
         getDate();
         setUser();
+    }
+
+    public enum Modus {
+        INSERT,
+        UPDATE;
     }
 
     private void initializeFrame() {
@@ -56,12 +62,13 @@ public class MainFrame extends javax.swing.JFrame {
     private void setUser() {
         user = DatabaseConnection.getUser();
         if (user == null) {
+            modus = Modus.INSERT;
             checkIfNewUser();
         } else {
+            updateModus();
             nameField.setText(user.getName());
             nettoLoonField.setText(String.valueOf(user.getNettoUurloon()));
             brutoLoonField.setText(String.valueOf(user.getBrutoUurloon()));
-            opslaanButton.setEnabled(false);
             fillTable();
 
         }
@@ -121,7 +128,6 @@ public class MainFrame extends javax.swing.JFrame {
         jLabel12 = new javax.swing.JLabel();
         jLabel15 = new javax.swing.JLabel();
         jLabel13 = new javax.swing.JLabel();
-        editUserBtn = new javax.swing.JButton();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         setTitle("Loonstrook Calculator");
@@ -362,13 +368,6 @@ public class MainFrame extends javax.swing.JFrame {
 
         jLabel13.setText("*Optioneel, laat 0 staan als u het bedrag niet weet!");
 
-        editUserBtn.setText("Gegevens aanpassen");
-        editUserBtn.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                editUserBtnActionPerformed(evt);
-            }
-        });
-
         javax.swing.GroupLayout jPanel2Layout = new javax.swing.GroupLayout(jPanel2);
         jPanel2.setLayout(jPanel2Layout);
         jPanel2Layout.setHorizontalGroup(
@@ -390,10 +389,7 @@ public class MainFrame extends javax.swing.JFrame {
                         .addComponent(nettoLoonField, javax.swing.GroupLayout.PREFERRED_SIZE, 90, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(jLabel13))
-                    .addGroup(jPanel2Layout.createSequentialGroup()
-                        .addComponent(opslaanButton, javax.swing.GroupLayout.PREFERRED_SIZE, 144, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addGap(18, 18, 18)
-                        .addComponent(editUserBtn, javax.swing.GroupLayout.PREFERRED_SIZE, 161, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                    .addComponent(opslaanButton, javax.swing.GroupLayout.PREFERRED_SIZE, 144, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
             .addGroup(jPanel2Layout.createSequentialGroup()
                 .addContainerGap()
@@ -421,9 +417,7 @@ public class MainFrame extends javax.swing.JFrame {
                     .addComponent(jLabel12)
                     .addComponent(jLabel13))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 112, Short.MAX_VALUE)
-                .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(opslaanButton, javax.swing.GroupLayout.PREFERRED_SIZE, 54, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(editUserBtn, javax.swing.GroupLayout.PREFERRED_SIZE, 54, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addComponent(opslaanButton, javax.swing.GroupLayout.PREFERRED_SIZE, 54, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGap(41, 41, 41)
                 .addComponent(jLabel15)
                 .addContainerGap())
@@ -446,7 +440,22 @@ public class MainFrame extends javax.swing.JFrame {
     }// </editor-fold>//GEN-END:initComponents
 
     private void opslaanButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_opslaanButtonActionPerformed
-        // TODO add your handling code here:  
+        saveStatus(modus);
+        updateModus();
+
+    }//GEN-LAST:event_opslaanButtonActionPerformed
+    private User createUser(String naam, double bruto, double netto) {
+        return (new User(naam, bruto, netto));
+
+    }
+
+    private void updateUser() {
+        user.setName(nameField.getText());
+        user.setBrutoUurloon(HelperFunctions.convertCurrencyToDoubleAndRound(brutoLoonField.getText()));
+        user.setNettoUurloon(HelperFunctions.convertCurrencyToDoubleAndRound(nettoLoonField.getText()));
+    }
+
+    private void saveStatus(Modus modus) {
         try {
             double netto = HelperFunctions.convertCurrencyToDoubleAndRound(nettoLoonField.getText());
             double bruto = HelperFunctions.convertCurrencyToDoubleAndRound(brutoLoonField.getText());
@@ -460,30 +469,41 @@ public class MainFrame extends javax.swing.JFrame {
             } else if (bruto <= 0 || netto < 0) {
                 JOptionPane.showMessageDialog(null, "Vul A.U.B. een correct bedrag in.");
             } else {
-
-                user = createUser(naam, bruto, netto);
-                if (DatabaseConnection.insertUser(user)) {
-                    JOptionPane.showMessageDialog(null, "Uw gegevens zijn opgeslagen");
-                    opslaanButton.setEnabled(false);
-                    editUserBtn.setEnabled(true);
-                }
-
+                prepareToSave(naam, bruto, netto);
             }
         } catch (NumberFormatException e) {
             JOptionPane.showMessageDialog(null, "Voer alleen nummers in bij uw loon!");
         }
 
 
+    }
 
-    }//GEN-LAST:event_opslaanButtonActionPerformed
-    private User createUser(String naam, double bruto, double netto) {
+    private void prepareToSave(String naam, double bruto, double netto) {
         if (netto == 0) {
             netto = bruto / 100 * 70;
             String nettoEind = String.valueOf(netto);
             nettoLoonField.setText(nettoEind);
         }
-        return (new User(naam, bruto, netto));
 
+        if (modus == Modus.INSERT) {
+            user = createUser(naam, bruto, netto);
+            if (DatabaseConnection.insertUser(user)) {
+                JOptionPane.showMessageDialog(null, "Uw gegevens zijn opgeslagen");
+                updateModus();
+            }
+
+        } else if (modus == Modus.UPDATE) {
+            updateUser();
+            if (DatabaseConnection.editUser(user)) {
+                JOptionPane.showMessageDialog(null, "Uw gegevens zijn opgeslagen.");
+            }
+
+        }
+    }
+
+    private void updateModus() {
+        modus = Modus.UPDATE;
+        opslaanButton.setText("Gegevens wijzigen");
     }
 
     private void addWorkhoursActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_addWorkhoursActionPerformed
@@ -556,15 +576,6 @@ public class MainFrame extends javax.swing.JFrame {
             JOptionPane.showMessageDialog(null, "U heeft niks geselecteerd.");
         }
     }//GEN-LAST:event_editBtnActionPerformed
-
-    private void editUserBtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_editUserBtnActionPerformed
-        user.setName(nameField.getText() );
-        user.setBrutoUurloon( HelperFunctions.convertCurrencyToDoubleAndRound(brutoLoonField.getText()) );
-        user.setNettoUurloon( HelperFunctions.convertCurrencyToDoubleAndRound(nettoLoonField.getText()) );
-        
-        DatabaseConnection.editUser(user);
-        JOptionPane.showMessageDialog(null, "Uw gegevens zijn opgeslagen.");
-    }//GEN-LAST:event_editUserBtnActionPerformed
 
     private void removeWorkday(WorkHour removeDay) {
         if (DatabaseConnection.deleteUren(removeDay)) {
@@ -641,7 +652,6 @@ public class MainFrame extends javax.swing.JFrame {
             public void run() {
                 if (isNewUser()) {
                     firstTimeMessage();
-                    editUserBtn.setEnabled(false);
                 }
             }
         };
@@ -667,7 +677,6 @@ public class MainFrame extends javax.swing.JFrame {
     private javax.swing.JTextField dayField;
     private javax.swing.JButton deleteBtn;
     private javax.swing.JButton editBtn;
-    private javax.swing.JButton editUserBtn;
     private javax.swing.JComboBox factorBox;
     private javax.swing.JComboBox filterJaarCombo;
     private javax.swing.JComboBox filterMaandCombo;
