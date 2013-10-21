@@ -48,6 +48,7 @@ public class DatabaseConnection {
                     + " hour DOUBLE NOT NULL, "
                     + " euro DOUBLE NOT NULL, "
                     + " factor INTEGER NOT NULL, "
+                    + " nettoloon DOUBLE NOT NULL, "
                     + " user_id INTEGER NOT NULL, "
                     + " FOREIGN KEY (user_id) REFERENCES users (id) ON UPDATE CASCADE ON DELETE CASCADE );";
             statement.executeUpdate(createUserTable);
@@ -73,14 +74,15 @@ public class DatabaseConnection {
         boolean successfull = false;
 
         try {
-            stmt = c.prepareStatement("INSERT INTO workhours (day, month, year, euro, factor, hour, user_id) VALUES (?, ?, ?, ?, ?, ?, ?)");
+            stmt = c.prepareStatement("INSERT INTO workhours (day, month, year, euro, factor, nettoloon, hour, user_id) VALUES (?, ?, ?, ?, ?, ?, ?, ?)");
             stmt.setInt(1, workHour.getDay());
             stmt.setInt(2, workHour.getMonth());
             stmt.setInt(3, workHour.getYear());
             stmt.setDouble(4, workHour.getEuro());
             stmt.setInt(5, workHour.getFactor());
-            stmt.setDouble(6, workHour.getHours());
-            stmt.setInt(7, id);
+            stmt.setDouble(6, workHour.getNettoLoon() );
+            stmt.setDouble(7, workHour.getHours());
+            stmt.setInt(8, id);
 
             successfull = stmt.executeUpdate() > 0;
             logger.info(String.valueOf(successfull));
@@ -200,8 +202,9 @@ public class DatabaseConnection {
                 double hour = rs.getDouble("hour");
                 double euro = rs.getDouble("euro");
                 int factor = rs.getInt("factor");
+                double nettoloon = rs.getDouble("nettoloon");
 
-                workHours.add(new WorkHour(workId, day, month, year, hour, euro, factor));
+                workHours.add(new WorkHour(workId, day, month, year, hour, euro, factor, nettoloon));
             }
 
         } catch (SQLException b) {
@@ -237,7 +240,21 @@ public class DatabaseConnection {
         catch(SQLException e){
             logger.info("Edit failed: " + e.getMessage());
         }
-        return true;
+        return false;
+    }
+    
+    public static boolean editUser(User user){
+        try{
+            stmt = c.prepareStatement("UPDATE users SET name = ?, brutoloon = ?, nettoloon = ? ");
+            stmt.setString (1,  user.getName() );
+            stmt.setDouble (2, user.getBrutoUurloon() );
+            stmt.setDouble (3, user.getNettoUurloon() );
+            return stmt.executeUpdate() > 0;  
+        }
+        catch(SQLException e){
+            logger.info("Edit failed: " + e.getMessage());
+        }
+        return false;
     }
     
 }

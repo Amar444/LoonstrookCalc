@@ -17,6 +17,7 @@ public class WorkHour implements Comparable<WorkHour> {
     private double hours;
     private double euro;
     private int factor;
+    private double nettoLoon;
     
     /**
      *
@@ -27,13 +28,22 @@ public class WorkHour implements Comparable<WorkHour> {
      * @param euro
      * @param factor
      */
-    public WorkHour(int day, int month, int year, double hours, double euro, int factor) {
+    public WorkHour(int day, int month, int year, double hours, double euro, int factor, double nettoloon) {
         this.day = day;
         this.month = month;
         this.year = year;
         this.hours = hours;
         this.euro = euro;
         this.factor = factor;
+        this.nettoLoon = nettoloon;
+    }
+
+    public double getNettoLoon() {
+        return nettoLoon;
+    }
+
+    public void setNettoLoon(double nettoLoon) {
+        this.nettoLoon = nettoLoon;
     }
     /**
      *
@@ -45,8 +55,8 @@ public class WorkHour implements Comparable<WorkHour> {
      * @param euro
      * @param factor
      */
-    public WorkHour(int id,int day, int month, int year, double hours, double euro, int factor){
-        this(day,month,year,hours,euro,factor);
+    public WorkHour(int id,int day, int month, int year, double hours, double euro, int factor, double nettoloon){
+        this(day,month,year,hours,euro,factor,nettoloon);
         this.id = id;
     }
 
