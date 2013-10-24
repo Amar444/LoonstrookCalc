@@ -13,6 +13,9 @@ import java.util.Calendar;
 import javax.swing.JOptionPane;
 import javax.swing.table.DefaultTableModel;
 import helpers.HelperFunctions;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
+import java.util.ArrayList;
 
 /**
  *
@@ -22,7 +25,7 @@ public class MainFrame extends javax.swing.JFrame {
 
     private DefaultTableModel myModel;
     private User user;
-    private Modus modus; //unused
+    private Modus modus; 
 
     public MainFrame() {
         initComponents();
@@ -30,11 +33,26 @@ public class MainFrame extends javax.swing.JFrame {
         myModel = (DefaultTableModel) workTimeTable.getModel();
         getDate();
         setUser();
+        addOnCloseListener();
     }
 
     public enum Modus {
         INSERT,
         UPDATE;
+    }
+    
+    private void addOnCloseListener() {        
+        this.addWindowListener(new WindowAdapter() {
+            @Override
+            public void windowClosing(WindowEvent e) {
+                int dialogResult = JOptionPane.showConfirmDialog(null, "Weet je zeker dat je wilt afsluiten?", null, JOptionPane.YES_NO_OPTION);
+                if(dialogResult == JOptionPane.YES_OPTION) {
+                    DatabaseConnection.closeConnection();
+                    System.exit(0);
+                }
+            }
+            
+        });
     }
 
     private void initializeFrame() {
@@ -112,7 +130,7 @@ public class MainFrame extends javax.swing.JFrame {
         jLabel6 = new javax.swing.JLabel();
         filterMaandCombo = new javax.swing.JComboBox();
         filterJaarCombo = new javax.swing.JComboBox();
-        jButton5 = new javax.swing.JButton();
+        filterBtn = new javax.swing.JButton();
         jPanel5 = new javax.swing.JPanel();
         editBtn = new javax.swing.JButton();
         deleteBtn = new javax.swing.JButton();
@@ -129,7 +147,7 @@ public class MainFrame extends javax.swing.JFrame {
         jLabel15 = new javax.swing.JLabel();
         jLabel13 = new javax.swing.JLabel();
 
-        setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
+        setDefaultCloseOperation(javax.swing.WindowConstants.DO_NOTHING_ON_CLOSE);
         setTitle("Loonstrook Calculator");
 
         workTimeTable.setModel(new javax.swing.table.DefaultTableModel(
@@ -233,7 +251,12 @@ public class MainFrame extends javax.swing.JFrame {
 
         jLabel6.setText("Filter op maand:");
 
-        jButton5.setText("Go");
+        filterBtn.setText("Go");
+        filterBtn.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                filterBtnActionPerformed(evt);
+            }
+        });
 
         javax.swing.GroupLayout jPanel4Layout = new javax.swing.GroupLayout(jPanel4);
         jPanel4.setLayout(jPanel4Layout);
@@ -253,7 +276,7 @@ public class MainFrame extends javax.swing.JFrame {
                         .addGap(18, 18, 18)
                         .addComponent(filterJaarCombo, javax.swing.GroupLayout.PREFERRED_SIZE, 74, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addGap(18, 18, 18)
-                        .addComponent(jButton5)))
+                        .addComponent(filterBtn)))
                 .addContainerGap(24, Short.MAX_VALUE))
         );
         jPanel4Layout.setVerticalGroup(
@@ -268,7 +291,7 @@ public class MainFrame extends javax.swing.JFrame {
                     .addComponent(jLabel6)
                     .addComponent(filterMaandCombo, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(filterJaarCombo, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(jButton5))
+                    .addComponent(filterBtn))
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
 
@@ -314,7 +337,7 @@ public class MainFrame extends javax.swing.JFrame {
             .addGroup(jPanel1Layout.createSequentialGroup()
                 .addGap(32, 32, 32)
                 .addComponent(jPanel3, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 63, Short.MAX_VALUE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 121, Short.MAX_VALUE)
                 .addComponent(jPanel5, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGap(18, 18, 18)
                 .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 329, javax.swing.GroupLayout.PREFERRED_SIZE)
@@ -394,7 +417,7 @@ public class MainFrame extends javax.swing.JFrame {
             .addGroup(jPanel2Layout.createSequentialGroup()
                 .addContainerGap()
                 .addComponent(jLabel15)
-                .addGap(0, 240, Short.MAX_VALUE))
+                .addGap(0, 298, Short.MAX_VALUE))
         );
         jPanel2Layout.setVerticalGroup(
             jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -577,6 +600,15 @@ public class MainFrame extends javax.swing.JFrame {
         }
     }//GEN-LAST:event_editBtnActionPerformed
 
+    private void filterBtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_filterBtnActionPerformed
+        int maand = Integer.parseInt(String.valueOf(filterMaandCombo.getSelectedItem()));
+        int jaar = Integer.parseInt(String.valueOf(filterJaarCombo.getSelectedItem()));
+        
+        ArrayList<WorkHour> filteredWorkHours = DatabaseConnection.filterTable(maand, jaar);
+        user.setWorkHours(filteredWorkHours);
+        fillTable();
+    }//GEN-LAST:event_filterBtnActionPerformed
+
     private void removeWorkday(WorkHour removeDay) {
         if (DatabaseConnection.deleteUren(removeDay)) {
             user.getWorkHours().remove(removeDay);
@@ -678,10 +710,10 @@ public class MainFrame extends javax.swing.JFrame {
     private javax.swing.JButton deleteBtn;
     private javax.swing.JButton editBtn;
     private javax.swing.JComboBox factorBox;
+    private javax.swing.JButton filterBtn;
     private javax.swing.JComboBox filterJaarCombo;
     private javax.swing.JComboBox filterMaandCombo;
     private javax.swing.JLabel inkomstenMaand;
-    private javax.swing.JButton jButton5;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel10;
     private javax.swing.JLabel jLabel11;

@@ -24,6 +24,7 @@ public class DatabaseConnection {
 
     /**
      * Opens the database connection
+     *
      * @return database successfully openened
      */
     public static boolean openConnection() {
@@ -66,8 +67,9 @@ public class DatabaseConnection {
 
     /**
      * Inserts a given workhour in the database, links it to the given id
-     * @param id 
-     * @param workHour 
+     *
+     * @param id
+     * @param workHour
      * @return successfull
      */
     public static boolean insertWorkHour(int id, WorkHour workHour) {
@@ -80,7 +82,7 @@ public class DatabaseConnection {
             stmt.setInt(3, workHour.getYear());
             stmt.setDouble(4, workHour.getEuro());
             stmt.setInt(5, workHour.getFactor());
-            stmt.setDouble(6, workHour.getNettoLoon() );
+            stmt.setDouble(6, workHour.getNettoLoon());
             stmt.setDouble(7, workHour.getHours());
             stmt.setInt(8, id);
 
@@ -104,6 +106,7 @@ public class DatabaseConnection {
 
     /**
      * Inserts a given user
+     *
      * @param user
      * @return successfully inserted
      */
@@ -146,7 +149,6 @@ public class DatabaseConnection {
         }
     }
 
-        
     private static void closeConnection(Exception e) {
         try {
             logger.severe(e.getMessage());
@@ -156,8 +158,10 @@ public class DatabaseConnection {
         }
 
     }
-    /** 
+
+    /**
      * Retrieves the user from the database
+     *
      * @return user
      */
     public static User getUser() { //Haal user op als deze bestaat
@@ -182,11 +186,13 @@ public class DatabaseConnection {
     }
 
     /**
-     * Retrieves workhours with given user_id
-     * @param id 
+     * Retrieves workhours with given user_id,
+     *
+     * @param id
      * @return ArrayList<WorkHour>
      */
-    public static ArrayList<WorkHour> getWorkHoursFromUserId(int id) {
+    
+    private static ArrayList<WorkHour> getWorkHoursFromUserId(int id) {
         ArrayList<WorkHour> workHours = new ArrayList<WorkHour>();
 
         try {
@@ -212,49 +218,74 @@ public class DatabaseConnection {
 
         return workHours;
     }
-    
+
     public static boolean deleteUren(WorkHour hour) {
         try {
             stmt = c.prepareStatement("DELETE FROM workhours WHERE id = ?");
-            stmt.setInt(1, hour.getId());           
-            return stmt.executeUpdate() > 0;  
-        }
-        catch(SQLException e) {
+            stmt.setInt(1, hour.getId());
+            return stmt.executeUpdate() > 0;
+        } catch (SQLException e) {
             logger.info("Delete failed: " + e.getMessage());
         }
         return false;
     }
-    
-    public static boolean editUren(WorkHour hour){
-        try{
+
+    public static boolean editUren(WorkHour hour) {
+        try {
             stmt = c.prepareStatement("UPDATE workhours SET day = ?, month = ?, year = ?, hour = ?, euro = ?, factor = ? WHERE id = ? ");
-            stmt.setInt (1, hour.getDay() );
-            stmt.setInt (2, hour.getMonth() );
-            stmt.setInt (3, hour.getYear() );
-            stmt.setDouble (4, hour.getHours() );
-            stmt.setDouble (5, hour.getEuro() );
-            stmt.setInt (6, hour.getFactor() );
-            stmt.setInt (7, hour.getId() ); 
-            return stmt.executeUpdate() > 0;  
-        }
-        catch(SQLException e){
+            stmt.setInt(1, hour.getDay());
+            stmt.setInt(2, hour.getMonth());
+            stmt.setInt(3, hour.getYear());
+            stmt.setDouble(4, hour.getHours());
+            stmt.setDouble(5, hour.getEuro());
+            stmt.setInt(6, hour.getFactor());
+            stmt.setInt(7, hour.getId());
+            return stmt.executeUpdate() > 0;
+        } catch (SQLException e) {
             logger.info("Edit failed: " + e.getMessage());
         }
         return false;
     }
-    
-    public static boolean editUser(User user){
-        try{
+
+    public static boolean editUser(User user) {
+        try {
             stmt = c.prepareStatement("UPDATE users SET name = ?, brutoloon = ?, nettoloon = ? ");
-            stmt.setString (1,  user.getName() );
-            stmt.setDouble (2, user.getBrutoUurloon() );
-            stmt.setDouble (3, user.getNettoUurloon() );
-            return stmt.executeUpdate() > 0;  
-        }
-        catch(SQLException e){
+            stmt.setString(1, user.getName());
+            stmt.setDouble(2, user.getBrutoUurloon());
+            stmt.setDouble(3, user.getNettoUurloon());
+            return stmt.executeUpdate() > 0;
+        } catch (SQLException e) {
             logger.info("Edit failed: " + e.getMessage());
         }
         return false;
     }
-    
+
+    public static ArrayList<WorkHour> filterTable(int maand, int jaar) {
+        ArrayList<WorkHour> filterHours = new ArrayList<WorkHour>();
+        
+        try {
+            stmt = c.prepareStatement("SELECT * FROM workhours WHERE month = ? AND year = ?");
+            stmt.setInt(1, maand);
+            stmt.setInt(2, jaar);
+            
+            rs = stmt.executeQuery();
+
+            while (rs.next()) {
+                int workId = rs.getInt("id");
+                int day = rs.getInt("day");
+                int month = rs.getInt("month");
+                int year = rs.getInt("year");
+                double hour = rs.getDouble("hour");
+                double euro = rs.getDouble("euro");
+                int factor = rs.getInt("factor");
+                double nettoloon = rs.getDouble("nettoloon");
+
+                filterHours.add(new WorkHour(workId, day, month, year, hour, euro, factor, nettoloon));
+            }
+            
+        } catch (SQLException e) {
+            logger.info("Filter failed: " + e.getMessage());
+        }
+        return filterHours;
+    }
 }
