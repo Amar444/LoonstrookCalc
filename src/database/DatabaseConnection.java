@@ -192,7 +192,7 @@ public class DatabaseConnection {
      * @return ArrayList<WorkHour>
      */
     
-    private static ArrayList<WorkHour> getWorkHoursFromUserId(int id) {
+    public static ArrayList<WorkHour> getWorkHoursFromUserId(int id) {
         ArrayList<WorkHour> workHours = new ArrayList<WorkHour>();
 
         try {
@@ -287,5 +287,5 @@ public class DatabaseConnection {
             logger.info("Filter failed: " + e.getMessage());
         }
         return filterHours;
-    }
+    }    
 }
