@@ -158,22 +158,27 @@ public class EditWorkHour extends javax.swing.JFrame {
     }// </editor-fold>//GEN-END:initComponents
 
     private void editBtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_editBtnActionPerformed
-
-        if (mainframe.monthGotIncorrectValues(Integer.parseInt(monthField.getText())) || mainframe.dayGotIncorrectValues(Integer.parseInt(dayField.getText()))) {
-            JOptionPane.showMessageDialog(null, "Voer een correcte datum in.");
-        } else {
-            if (DatabaseConnection.editUren(workhour)) {
+        try {
+            if (mainframe.monthGotIncorrectValues(Integer.parseInt(monthField.getText())) || mainframe.dayGotIncorrectValues(Integer.parseInt(dayField.getText()))) {
+                JOptionPane.showMessageDialog(null, "Voer een correcte datum in.");
+            } else {
                 workhour.setDay(Integer.parseInt(dayField.getText()));
                 workhour.setMonth(Integer.parseInt(monthField.getText()));
                 workhour.setYear(Integer.parseInt(yearField.getText()));
                 workhour.setHours(Double.parseDouble(String.valueOf(urenCombo.getSelectedItem())));
                 workhour.setFactor(Integer.parseInt(String.valueOf(factorCombo.getSelectedItem())));
-                workhour.setEuro( workhour.getHours() * workhour.getNettoLoon() / 100 * workhour.getFactor() );
-
-                mainframe.setEnabled(true);
-                dispose();
-                mainframe.fillTable();
+                workhour.setEuro(workhour.getHours() * workhour.getNettoLoon() / 100 * workhour.getFactor());
+                if (DatabaseConnection.editUren(workhour)) {
+                    mainframe.setEnabled(true);
+                    dispose();
+                    mainframe.fillTable();
+                }
             }
+        } catch (NumberFormatException e) {
+            JOptionPane.showMessageDialog(null, "Vul een correcte datum in.");
+        } catch (NullPointerException e) {
+            System.out.println(e.getMessage());
+            JOptionPane.showMessageDialog(null, "U heeft nog geen gebruiker aangemaakt!");
         }
 
     }//GEN-LAST:event_editBtnActionPerformed

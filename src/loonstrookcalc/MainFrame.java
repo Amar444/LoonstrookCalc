@@ -27,21 +27,29 @@ public class MainFrame extends javax.swing.JFrame {
     private DefaultTableModel myModel;
     private User user;
     private Modus modus;
+    private SearchModus searchModus;
 
     public MainFrame() {
         initComponents();
+        searchModus = SearchModus.ALL;
         initializeFrame();
         myModel = (DefaultTableModel) workTimeTable.getModel();
         getDate();
         setUser();
         addOnCloseListener();
-        this.setSize(new Dimension(785,457));
+        this.setSize(new Dimension(785, 457));
     }
 
     public enum Modus {
 
         INSERT,
         UPDATE;
+    }
+
+    public enum SearchModus {
+
+        ALL,
+        FILTERED;
     }
 
     private void addOnCloseListener() {
@@ -104,7 +112,21 @@ public class MainFrame extends javax.swing.JFrame {
         }
         euros = HelperFunctions.round(euros);
 
-        inkomstenMaand.setText("€ " + String.valueOf(euros));
+        if (searchModus == SearchModus.FILTERED) {
+            inkomstenMaand.setText("€ " + HelperFunctions.convertCurrencyToDoubleAndRound(String.valueOf(euros)));
+        }
+
+
+        if (searchModus == SearchModus.ALL) {
+            Calendar cal = Calendar.getInstance();  // Create new calendar instance      
+            DateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy"); //Create format for day : Day
+
+            String date = dateFormat.format(cal.getTime());
+            
+            String month = date.substring(3, 5);
+            String year = date.substring(6, 10);
+            inkomstenMaand.setText(""+ HelperFunctions.convertCurrencyToDoubleAndRound("" + DatabaseConnection.inkomstenMaand(Integer.parseInt(month), Integer.parseInt(year))));
+        }
     }
 
     @SuppressWarnings("unchecked")
@@ -360,15 +382,15 @@ public class MainFrame extends javax.swing.JFrame {
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel1Layout.createSequentialGroup()
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
                     .addGroup(jPanel1Layout.createSequentialGroup()
-                        .addGap(32, 32, 32)
+                        .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                        .addComponent(jPanel4, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addGroup(jPanel1Layout.createSequentialGroup()
+                        .addGap(25, 25, 25)
                         .addComponent(jPanel3, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 82, Short.MAX_VALUE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 89, Short.MAX_VALUE)
                         .addComponent(jPanel5, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addGap(27, 27, 27)
-                        .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 329, javax.swing.GroupLayout.PREFERRED_SIZE))
-                    .addGroup(jPanel1Layout.createSequentialGroup()
-                        .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                        .addComponent(jPanel4, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                        .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 329, javax.swing.GroupLayout.PREFERRED_SIZE)))
                 .addGap(21, 21, 21))
         );
         jPanel1Layout.setVerticalGroup(
@@ -376,18 +398,15 @@ public class MainFrame extends javax.swing.JFrame {
             .addGroup(jPanel1Layout.createSequentialGroup()
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(jPanel1Layout.createSequentialGroup()
-                        .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addGroup(jPanel1Layout.createSequentialGroup()
-                                .addGap(21, 21, 21)
-                                .addComponent(jPanel3, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                            .addGroup(jPanel1Layout.createSequentialGroup()
-                                .addContainerGap(20, Short.MAX_VALUE)
-                                .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 292, javax.swing.GroupLayout.PREFERRED_SIZE)))
-                        .addGap(2, 2, 2))
-                    .addGroup(jPanel1Layout.createSequentialGroup()
                         .addGap(40, 40, 40)
                         .addComponent(jPanel5, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)))
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel1Layout.createSequentialGroup()
+                        .addContainerGap(20, Short.MAX_VALUE)
+                        .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addComponent(jPanel3, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 292, javax.swing.GroupLayout.PREFERRED_SIZE))
+                        .addGap(2, 2, 2)))
                 .addComponent(jPanel4, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addContainerGap())
         );
@@ -430,16 +449,16 @@ public class MainFrame extends javax.swing.JFrame {
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addComponent(jLabel10)
-                    .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                        .addComponent(jLabel2)
-                        .addComponent(jLabel9)
-                        .addComponent(nameField)
-                        .addComponent(brutoLoonField))
+                    .addComponent(jLabel2)
+                    .addComponent(jLabel9)
+                    .addComponent(opslaanButton, javax.swing.GroupLayout.PREFERRED_SIZE, 144, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addGroup(jPanel2Layout.createSequentialGroup()
-                        .addComponent(nettoLoonField, javax.swing.GroupLayout.PREFERRED_SIZE, 90, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                            .addComponent(nettoLoonField, javax.swing.GroupLayout.DEFAULT_SIZE, 110, Short.MAX_VALUE)
+                            .addComponent(brutoLoonField)
+                            .addComponent(nameField))
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(jLabel13))
-                    .addComponent(opslaanButton, javax.swing.GroupLayout.PREFERRED_SIZE, 144, javax.swing.GroupLayout.PREFERRED_SIZE))
+                        .addComponent(jLabel13)))
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
             .addGroup(jPanel2Layout.createSequentialGroup()
                 .addContainerGap()
@@ -528,7 +547,7 @@ public class MainFrame extends javax.swing.JFrame {
         if (netto == 0) {
             netto = bruto / 100 * 70;
             String nettoEind = String.valueOf(netto);
-            nettoLoonField.setText(nettoEind);
+            nettoLoonField.setText(String.valueOf(HelperFunctions.convertCurrencyToDoubleAndRound(nettoEind)));
         }
 
         if (modus == Modus.INSERT) {
@@ -618,6 +637,7 @@ public class MainFrame extends javax.swing.JFrame {
             edit.setVisible(true);
             edit.setResizable(false);
             edit.setLocationRelativeTo(null);
+
         } else {
             JOptionPane.showMessageDialog(null, "U heeft niks geselecteerd.");
         }
@@ -630,7 +650,11 @@ public class MainFrame extends javax.swing.JFrame {
 
             ArrayList<WorkHour> filteredWorkHours = DatabaseConnection.filterTable(maand, jaar);
             user.setWorkHours(filteredWorkHours);
+            searchModus = SearchModus.FILTERED;
             fillTable();
+
+
+
         } catch (NullPointerException e) {
             System.out.println(e.getMessage());
             JOptionPane.showMessageDialog(null, "U heeft nog geen gebruiker aangemaakt!");
@@ -642,6 +666,7 @@ public class MainFrame extends javax.swing.JFrame {
         try {
             ArrayList<WorkHour> workHours = DatabaseConnection.getWorkHoursFromUserId(user.getId());
             user.setWorkHours(workHours);
+            searchModus = SearchModus.ALL;
             fillTable();
         } catch (NullPointerException e) {
             System.out.println(e.getMessage());
@@ -732,7 +757,7 @@ public class MainFrame extends javax.swing.JFrame {
 
     public double calculateEuro(double uren, int factor) {
 
-        double euros = (uren * HelperFunctions.convertToDouble(nettoLoonField.getText()) / 100 * factor);
+        double euros = (uren * user.getNettoUurloon() / 100 * factor);
         return euros;
     }
 

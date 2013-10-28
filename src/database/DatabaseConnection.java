@@ -191,7 +191,6 @@ public class DatabaseConnection {
      * @param id
      * @return ArrayList<WorkHour>
      */
-    
     public static ArrayList<WorkHour> getWorkHoursFromUserId(int id) {
         ArrayList<WorkHour> workHours = new ArrayList<WorkHour>();
 
@@ -262,12 +261,12 @@ public class DatabaseConnection {
 
     public static ArrayList<WorkHour> filterTable(int maand, int jaar) {
         ArrayList<WorkHour> filterHours = new ArrayList<WorkHour>();
-        
+
         try {
             stmt = c.prepareStatement("SELECT * FROM workhours WHERE month = ? AND year = ?");
             stmt.setInt(1, maand);
             stmt.setInt(2, jaar);
-            
+
             rs = stmt.executeQuery();
 
             while (rs.next()) {
@@ -282,10 +281,27 @@ public class DatabaseConnection {
 
                 filterHours.add(new WorkHour(workId, day, month, year, hour, euro, factor, nettoloon));
             }
-            
+
         } catch (SQLException e) {
             logger.info("Filter failed: " + e.getMessage());
         }
         return filterHours;
-    }    
+    }
+
+    public static double inkomstenMaand(int month, int year) {
+        double euro = 0;
+        try {
+            stmt = c.prepareStatement("SELECT SUM(euro) AS totale_euros FROM workhours WHERE month = ? AND year = ? ");
+            stmt.setInt(1, month);
+            stmt.setInt(2, year);
+            rs = stmt.executeQuery();
+
+            while (rs.next()) {
+                euro = rs.getDouble("totale_euros");
+            }
+        } catch (SQLException e) {
+        }
+
+        return euro;
+    }
 }
