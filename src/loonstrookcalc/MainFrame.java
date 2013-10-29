@@ -125,7 +125,7 @@ public class MainFrame extends javax.swing.JFrame {
             
             String month = date.substring(3, 5);
             String year = date.substring(6, 10);
-            inkomstenMaand.setText(""+ HelperFunctions.convertCurrencyToDoubleAndRound("" + DatabaseConnection.inkomstenMaand(Integer.parseInt(month), Integer.parseInt(year))));
+            inkomstenMaand.setText("€ "+ HelperFunctions.convertCurrencyToDoubleAndRound("" + DatabaseConnection.inkomstenMaand(Integer.parseInt(month), Integer.parseInt(year))));
         }
     }
 
