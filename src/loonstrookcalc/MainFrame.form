@@ -548,7 +548,7 @@
     <Component class="javax.swing.JLabel" name="jLabel5">
       <Properties>
         <Property name="icon" type="javax.swing.Icon" editor="org.netbeans.modules.form.editors2.IconEditor">
-          <Image iconType="3" name="/Img/Cool-Abstract-Wallpapers-Free.jpg"/>
+          <Image iconType="3" name="/Img/Abstracte achtergrond.jpg"/>
         </Property>
       </Properties>
       <Constraints>

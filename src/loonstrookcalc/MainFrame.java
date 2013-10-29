@@ -497,7 +497,7 @@ public class MainFrame extends javax.swing.JFrame {
         getContentPane().add(jTabbedPane1);
         jTabbedPane1.setBounds(0, 0, 780, 430);
 
-        jLabel5.setIcon(new javax.swing.ImageIcon(getClass().getResource("/Img/Cool-Abstract-Wallpapers-Free.jpg"))); // NOI18N
+        jLabel5.setIcon(new javax.swing.ImageIcon(getClass().getResource("/Img/Abstracte achtergrond.jpg"))); // NOI18N
         getContentPane().add(jLabel5);
         jLabel5.setBounds(0, 0, 810, 810);
 
